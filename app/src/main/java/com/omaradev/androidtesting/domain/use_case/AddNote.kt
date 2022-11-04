@@ -1,21 +1,23 @@
 package com.omaradev.androidtesting.domain.use_case
 
-import com.omaradev.androidtesting.domain.model.InvalidNoteException
 import com.omaradev.androidtesting.domain.model.Note
 import com.omaradev.androidtesting.domain.repository.Repository
+import com.omaradev.androidtesting.util.Resource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class AddNote(
     private val repository: Repository
 ) {
-
-    @Throws(InvalidNoteException::class)
-    suspend operator fun invoke(note: Note) {
-        if(note.title.isBlank()) {
-            throw InvalidNoteException("The title of the note can't be empty.")
+    operator fun invoke(
+        note: Note
+    ): Flow<Resource<*>> = flow {
+        try {
+            emit(Resource.Loading<Any>())
+            repository.insertNote(note)
+            emit(Resource.Success<Any>("Success"))
+        } catch (e:Exception) {
+            emit(Resource.Error<Any>(e.localizedMessage ?: "an Error Occurred"))
         }
-        if(note.content.isBlank()) {
-            throw InvalidNoteException("The content of the note can't be empty.")
-        }
-        repository.insertNote(note)
     }
 }

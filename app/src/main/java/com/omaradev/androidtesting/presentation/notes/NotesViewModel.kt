@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.omaradev.androidtesting.domain.model.Note
 import com.omaradev.androidtesting.domain.use_case.NoteUseCases
+import com.omaradev.androidtesting.presentation.add_edit_note.AddEditNoteViewModel
 import com.omaradev.androidtesting.util.NoteOrder
 import com.omaradev.androidtesting.util.OrderType
+import com.omaradev.androidtesting.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -42,10 +44,13 @@ class NotesViewModel @Inject constructor(
                 getNotes(event.noteOrder)
             }
             is NotesEvent.DeleteNote -> {
-                viewModelScope.launch {
-                    noteUseCases.deleteNote(event.note)
-                    recentlyDeletedNote = event.note
-                }
+                noteUseCases.deleteNote(event.note).onEach { response ->
+                    when (response) {
+                        is Resource.Success -> {
+                            recentlyDeletedNote = event.note
+                        }
+                    }
+                }.launchIn(viewModelScope)
             }
             is NotesEvent.RestoreNote -> {
                 viewModelScope.launch {
