@@ -67,14 +67,13 @@ class NotesViewModel @Inject constructor(
     }
 
     private fun getNotes(noteOrder: NoteOrder) {
-        getNotesJob?.cancel()
-        getNotesJob = noteUseCases.getNotes(noteOrder)
-            .onEach { notes ->
-                _state.value = state.value.copy(
-                    notes = notes,
-                    noteOrder = noteOrder
-                )
+        noteUseCases.getNotes(noteOrder).onEach { response ->
+            when (response) {
+                is Resource.Success -> {
+                    _state.value =
+                        response.data?.let { NotesState(notes = it, noteOrder = noteOrder) }!!
+                }
             }
-            .launchIn(viewModelScope)
+        }.launchIn(viewModelScope)
     }
 }

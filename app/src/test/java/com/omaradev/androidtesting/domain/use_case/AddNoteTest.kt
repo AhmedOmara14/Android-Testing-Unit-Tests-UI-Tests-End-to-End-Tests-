@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import com.omaradev.androidtesting.data.FakeRepository
 import com.omaradev.androidtesting.domain.model.InvalidNoteException
 import com.omaradev.androidtesting.domain.model.Note
+import com.omaradev.androidtesting.util.Resource
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -30,9 +31,10 @@ class AddNoteTest {
             timestamp = 1,
             color = 1
         )
-        fakeRepository.insertNote(note = note)
-        val notes = getNotes().first()
-        assertFalse(notes.contains(note))
+        fakeRepository.insertNote(note)
+        val value: Resource<Note> = getNotes().first()
+
+        assertThat(value.status).isEqualTo(Status.ERROR)
     }
 
 

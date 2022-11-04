@@ -28,6 +28,7 @@ fun NotesScreen(
     viewModel: NotesViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
+    val notes_ = viewModel.state.value.notes
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
@@ -86,7 +87,7 @@ fun NotesScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(state.notes) { note ->
+                items(notes_) { note ->
                     NoteItem(
                         note = note,
                         modifier = Modifier

@@ -10,7 +10,7 @@ class RepositoryImpl(
     private val dao: NoteDao
 ) : Repository {
 
-    override fun getNotes(): Flow<List<Note>> {
+    override suspend fun getNotes(): List<Note> {
         return dao.getNotes()
     }
 
